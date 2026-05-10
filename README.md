@@ -6,6 +6,10 @@
 
 ## ¿Qué es un quine?
 
+## - Ayuda: 
+
+[¿Cómo construyo un Quine?](#cómo-construyo-un-quine)
+
 Un quine es un metaprograma cuya salida es idéntica a su propio código fuente. No puede leer el fichero fuente ni usar ninguna entrada de datos externa. Un programa con el código fuente vacío se considera solución trivial (para la mayoría de lenguajes no produce salida, que es exactamente su código fuente).
 
 ---
@@ -175,3 +179,115 @@ Rehacer el proyecto completo en un **lenguaje de tu elección** (distinto de C y
 - [Fixed-point combinator](https://en.wikipedia.org/wiki/Fixed-point_combinator)
 - [NASM documentation](https://nasm.us/doc/)
 - Busca todo lo relacionado con **fixed points** — el subject lo recomienda explícitamente.
+
+---
+
+# ¿Cómo construyo un Quine?
+
+
+## Indice:
+
+ - [1. ¿Cómo funciona `printf()`?](#1-cómo-funciona-printf)
+ - [2. ¿Cómo sería la idea correcta de quine?](#2-cómo-sería-la-idea-correcta-de-quine)
+
+---
+
+## 1. ¿Cómo funciona `printf()`?
+
+Vamos a usar esta pequeña función como ejemplo:
+```c
+char *a = "Hola y fin\n";
+printf("%s", a);
+```
+
+`printf()` interpreta el formato y printea por pantalla el argumento asociado al formato:
+
+### Formato:
+```c
+printf("%s", ...);
+        ^
+```
+
+### Argumentos (lista variadica):
+```c
+printf("%s", a);
+             ^  
+a → "Hola y fin\n"
+```
+
+- 👉 printf NO imprime "%s" tal cual
+- 👉 Lo usa como cadena de formato
+
+Recorre la cadena byte a byte y los va interpretando:
+```c
+H o l a   y   f i n \n
+```
+
+---
+
+## 2. ¿Cómo sería la idea correcta de quine?
+
+Un quine es un programa que imprime su propio código.
+
+Para poder hacer eso, **guardamos dentro de un `char *` toda nuestra función**.
+
+Vamos a usar esta función y la vamos a imprimir paso por paso:
+```c
+int main(){char*a="int main(){char*a=%c%s%c;printf(a, 34,a, 34);}";printf(a, 34,a, 34);}
+```
+
+Desplegamos la función y partimos del último `printf(a, 34,a, 34);` para que se entienda mejor:
+```c
+int main()
+{
+    char *a = "int main(){char*a=%c%s%c;printf(a, 34,a, 34);}";
+    printf(a, 34,a, 34);
+}
+```
+
+### Formato:
+```c
+printf(a, 34,a, 34);
+       ^
+char *a = "int main(){char*a=%c%s%c;printf(a, 34,a, 34);}"
+```
+
+### Argumentos (lista variadica):
+```c
+printf(a, 34,a, 34);
+          ^  ^  ^
+34 → "
+a → "int main(){char*a=%c%s%c;printf(a, 34,a, 34);}"
+34 → "
+```
+
+###  Ejecución:
+
+**`printf(a,...)`** → Recorre y printea byte a byte la cadena almacenada en `a`  hasta que encuentra el primer indentifiador de formato:
+```bash
+./aout
+int main(){char*a=
+```
+
+**`char*a=%c`** → Una vez que se topa con el primer indentifiador de formato `%c`, printf siguiendo la secuencias de sus argumentos (lista variable) `printf(a, 34...)` lo printea (`"` = 34 en Ascii):
+```bash
+int main(){char*a="
+```
+
+**`char*a=%c%s`** → Se desplaza un byte a través del identificador de formato y se topa con el formato `%s`.
+
+printf siguiendo la secuencia de argumentos, interpreta el argumento asociado a `%s` en `printf(a, 34,a,...)` que es el contenido completo de `*a`:
+```bash
+int main(){char*a="int main(){char*a=%c%s%c;printf(a, 34,a, 34);}
+```
+
+**`char*a=%c%s%c`** → Se desplaza otro byte e interpreta `%c` que son las comillas que cierran el string:
+```bash
+int main(){char*a="int main(){char*a=%c%s%c;printf(a, 34,a, 34);}"
+```
+
+Y acto seguido se sigue desplazando y printeando byte a byte el el formato `*a` hasta el final:
+```bash
+int main(){char*a="int main(){char*a=%c%s%c;printf(a, 34,a, 34);}";printf(a, 34,a, 34);}
+```
+
