@@ -38,6 +38,8 @@ clean:
 	$(RM) $(OBJT)
 	$(RM) $(OBJTB)
 	$(RM) $(OBJTC)
+	$(RM) Sully_*.c Sully_[0-9] Sully_[0-9][0-9]
+	$(RM) Grace_kid.c
 
 fclean: clean
 	$(RM) $(NAME)
@@ -47,46 +49,3 @@ fclean: clean
 re: fclean all
 
 .PHONY: all colleen grace sully clean fclean re
-
-
-
-
-# NAME = Colleen
-# NAME_B = Grace
-# NAME_C = Sully
-
-# CC = gcc
-# CFLAGS = -Wall -Wextra -Werror -g
-# RM = rm -rf
-
-# SRC = Colleen.c
-# SRCB = Grace.c
-# SRCC = Sully.c
-
-# OBJ = $(SRC:.c=.o)
-# OBJB = $(SRCB:.c=.o)
-# OBJC = $(SRCC:.c=.o)
-
-# all: $(NAME) $(NAME_B) $(NAME_C)
-
-# $(NAME): $(OBJ)
-# 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
-
-# $(NAME_B): $(OBJB)
-# 	$(CC) $(CFLAGS) -o $(NAME_B) $(OBJB)
-
-# $(NAME_C): $(OBJC)
-# 	$(CC) $(CFLAGS) -o $(NAME_C) $(OBJC)
-
-# %.o: %.c
-# 	$(CC) $(CFLAGS) -c $< -o $@
-
-# clean:
-# 	$(RM) $(OBJ) $(OBJB) $(OBJC)
-
-# fclean: clean
-# 	$(RM) $(NAME) $(NAME_B) $(NAME_C)
-
-# re: fclean all
-
-# .PHONY: all clean fclean re
