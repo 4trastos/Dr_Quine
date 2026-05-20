@@ -42,7 +42,7 @@ clean:
 	$(RM) $(OBJTB)
 	$(RM) $(OBJTC)
 	$(RM) Sully_*.s Sully_*.o Sully_*.c Sully_[0-9] Sully_[0-9][0-9]
-	$(RM) Grace_kid.s Grace_kid.c
+	$(RM) Grace_kid.s Grace_kid.o
 
 fclean: clean
 	$(RM) $(NAME)
